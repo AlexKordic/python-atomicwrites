@@ -87,3 +87,14 @@ def test_atomic_write_in_pwd(tmpdir):
         assert len(tmpdir.listdir()) == 1
     finally:
         os.chdir(orig_curdir)
+
+def test_jpeg_write(tmpdir):
+    input_jpeg = os.path.abspath(os.path.join(os.path.dirname(__file__), "alex.jpg"))
+    output_jpeg = str(tmpdir.join('corrupted.jpg'))
+    with open(input_jpeg, "rb") as i:
+        data = i.read()
+    with atomic_write(output_jpeg, overwrite=True, mode="wb") as f:
+        f.write(data)
+    written_data = open(output_jpeg, "rb").read()
+    original_data = open(input_jpeg, "rb").read()
+    assert written_data == original_data
